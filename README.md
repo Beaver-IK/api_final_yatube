@@ -32,7 +32,7 @@ RESTful endpoints, использующие JSON.
     source venv/bin/activate  # Linux/macOS
     # venv\Scripts\activate  # Windows
     ```
-3.  Установите зависимости:
+3.  Установите зависимостей:
 
     ```bash
     pip install -r requirements.txt
