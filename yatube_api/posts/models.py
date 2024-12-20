@@ -14,29 +14,36 @@ class Group(models.Model):
 
 
 class Follow(models.Model):
-    """
-    Промежуточная модель для реализации подписок (многие ко многим)
+    """Промежуточная модель для реализации подписок (многие ко многим)
     между пользователями.
     """
-    
+
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
         related_name='following',
-        verbose_name='Подписчик'
+        verbose_name='Пользователь',
+        null=False, blank=False
     )
     following = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
         related_name='follower',
-        verbose_name='Подписан на'
+        verbose_name='Подписан на',
+        null=False, blank=False
     )
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
+    created_at = models.DateTimeField(
+        auto_now_add=True, verbose_name='Дата создания')
 
     class Meta:
         verbose_name = 'Подписка'
         verbose_name_plural = 'Подписки'
-        unique_together = ('user', 'following')  # Гарантирует уникальность комбинации user/following
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'following'],
+                name='unique_user_following'
+            )
+        ]
 
     def __str__(self):
         return f"{self.user} подписан на {self.following}"
@@ -44,7 +51,7 @@ class Follow(models.Model):
 
 class Post(models.Model):
     """Модель публикаций пользователей."""
-    
+
     text = models.TextField(null=False, blank=False)
     pub_date = models.DateTimeField('Дата публикации', auto_now_add=True)
     author = models.ForeignKey(
@@ -52,7 +59,8 @@ class Post(models.Model):
     image = models.ImageField(
         upload_to='posts/', null=True, blank=True)
     group = models.ForeignKey(
-        Group, on_delete=models.CASCADE, null=True, blank=True, related_name='groups')
+        Group, on_delete=models.CASCADE,
+        null=True, blank=True, related_name='groups')
 
     def __str__(self):
         return self.text
@@ -60,7 +68,7 @@ class Post(models.Model):
 
 class Comment(models.Model):
     """Модель комментариев пользователей."""
-    
+
     author = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='comments')
     post = models.ForeignKey(
