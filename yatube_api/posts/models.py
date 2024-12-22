@@ -64,7 +64,7 @@ class Post(models.Model):
 
     def __str__(self):
         return self.text
-    
+
     class Meta:
         ordering = ['-pub_date', 'author']
 
